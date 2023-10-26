@@ -38,7 +38,7 @@ While this is primarily a personal learning repository, if you find any mistakes
 
 ## 📚 Resources
 
-- [Kubernetes in Action](https://www.oreilly.com/library/view/kubernetes-in-action/9781617293726/)https://www.oreilly.com/library/view/kubernetes-in-action/9781617293726/)
+- [Kubernetes in Action] (https://www.oreilly.com/library/view/kubernetes-in-action/9781617293726/)https://www.oreilly.com/library/view/kubernetes-in-action/9781617293726/)
 
 
 
