@@ -6,7 +6,7 @@ Welcome to my learning journey with Kubernetes. I kick-started my adventure with
 
 1. **Kubernetes in Action**
    - [x] [Chapter 1: Introduction to Kubernetes](chapters/chapter-01.md)
-   - [ ] [Chapter 2: First steps with Docker and Kubernetes] (chapters/chapter-02.md)
+   - [ ] [Chapter 2: First steps with Docker and Kubernetes](chapters/chapter-02.md)
    - [ ] Chapter 3: Pods: running containers in Kubernetes
    - [ ] Chapter 4: Replication and other controllers: deploying managed pods
    - [ ] Chapter 5: Services: enabling clients to discover and talk to pods
