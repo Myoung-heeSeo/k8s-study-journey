@@ -29,8 +29,8 @@ Welcome to my learning journey with Kubernetes. I kick-started my adventure with
 
 
 ## 🛠 Tools & Setup
-
-- 
+- [Docker](http://docs.docker.com/engine/installation/)
+- [Minikube](http://github.com/kubernetes/minikube)
 
 ## 🤝 Contributing
 
