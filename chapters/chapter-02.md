@@ -22,5 +22,55 @@ By the end of the chapter, we gain practical knowledge on deploying applications
 
   Docker supports having versions or variants of the same image under the same name. It can specified with tags next to image name. 
   ```
-  $ docker run <iamge>:<tag>  -- (default tag: 'latest')
+  $ docker run <iamge>:<tag>   # default tag: 'latest'
+  ```
+
+- **Creating a Dockerfile for the image**
+   ```
+   FROM node:7   # FROM: line defines the container image you’ll use as a starting point
+   ADD app.js /app.js # ADD a b: add 'a' file to 'b' path
+   ENTRYPOINT ["node", "app.js"]  # ENTRYPOINT: executed when somebody runs the image
+   ```
+- **Build Docker image**
+  ```
+  $ docker build -t kubia .  # docker build -t {image name} {path}
+  ```
+  
+  <img width="544" alt="스크린샷 2023-11-01 오전 12 31 04" src="https://github.com/Myoung-heeSeo/k8s-study-journey/assets/43746377/73d8a5f0-0dbe-40ff-8cf0-939232e1c1ec">
+  
+  Docker client and docker daemon don't need to be on the same machine. The contents of the whole directory are uploaded to the Docker daemon and the image is built there. 
+
+  
+  Images in Docker are made up of multiple layers, enhancing storage and transfer efficiency. While a Dockerfile might seem to produce one layer, each command in it actually creates a distinct layer, stacking them atop the base image layers.
+  
+  <img width="696" alt="스크린샷 2023-11-01 오전 12 38 59" src="https://github.com/Myoung-heeSeo/k8s-study-journey/assets/43746377/d542ad51-8550-4433-bf8f-a515dcaad4a6">
+
+  You can manually create a new image by starting a container from an existing image, executing commands inside it, then saving its final state as a new image after exiting.
+
+- **Listing locally stored images**
+  ```
+  $ docker images
+  REPOSITORY   TAG      IMAGE ID           CREATED             VIRTUAL SIZE
+  kubia        latest   d30ecc7419e7       1 minute ago        637.1 MB
+  ...
+  ```
+
+- **Running the container image**
+  ```
+  $ docker run --name kubia-container -p 8080:8080 -d kubia
+  ```
+  - Run new container "kubia-container" from "kubia" base image with -d option (detached from console and running in the background).
+ 
+- **Listing running containers**
+  ```
+  $ docker ps
+  CONTAINER ID  IMAGE         COMMAND               CREATED        ...
+  44d76963e8e1  kubia:latest  "/bin/sh -c 'node ap  6 minutes ago  ...
+  
+  ...  STATUS              PORTS                    NAMES
+  ...  Up 6 minutes        0.0.0.0:8080->8080/tcp   kubia-container
+  ```
+  Listing with additional information
+  ```
+  $ docker inspect kubia-container
   ```
