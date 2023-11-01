@@ -1,5 +1,7 @@
 # 🚀 Kube Study Journey
 
+## 💬 Introduction
+
 Welcome to my Kubernetes learning journey. I kick-started my adventure with "Kubernetes in Action", a renowned guide to Kubernetes, and plan to explore more topics and resources as I move forward. As a Korean Data Engineer with 3+ years of experience, I've recognized the power and necessity of container orchestration in today's tech landscape. My dual objectives are to expand my infrastructure expertise and to articulate these insights in English, further refining my language skills. As I navigate this path, your insights and feedback are highly valued and always welcome.
 
 
