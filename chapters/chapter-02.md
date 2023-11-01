@@ -1,4 +1,4 @@
-# Chapter 01: First steps with Docker and Kubernetes
+# Chapter 02: First steps with Docker and Kubernetes
 
 ## 📚 Summary
 
