@@ -34,6 +34,7 @@ Welcome to my Kubernetes learning journey. I kick-started my adventure with "Kub
 ## 🛠 Tools & Setup
 - [Docker](http://docs.docker.com/engine/installation/)
 - [Minikube](http://github.com/kubernetes/minikube)
+- [kubectl](https://kubernetes.io/docs/reference/kubectl/)
 
 ## 🤝 Contributing
 
