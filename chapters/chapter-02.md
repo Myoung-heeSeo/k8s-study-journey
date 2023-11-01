@@ -22,7 +22,7 @@ By the end of the chapter, we gain practical knowledge on deploying applications
 
   Docker supports having versions or variants of the same image under the same name. It can specified with tags next to image name. 
   ```
-  $ docker run <iamge>:<tag>   # default tag: 'latest'
+  $ docker run <image>:<tag>   # default tag: 'latest'
   ```
 
 - **Creating a Dockerfile for the image**
@@ -56,10 +56,12 @@ By the end of the chapter, we gain practical knowledge on deploying applications
   ```
 
 - **Running the container image**
+
+  Run new container "kubia-container" from "kubia" base image with -d option (detached from console and running in the background).
   ```
   $ docker run --name kubia-container -p 8080:8080 -d kubia
   ```
-  - Run new container "kubia-container" from "kubia" base image with -d option (detached from console and running in the background).
+  
  
 - **Listing running containers**
   ```
@@ -70,7 +72,83 @@ By the end of the chapter, we gain practical knowledge on deploying applications
   ...  STATUS              PORTS                    NAMES
   ...  Up 6 minutes        0.0.0.0:8080->8080/tcp   kubia-container
   ```
-  Listing with additional information
+  Listing containers including additional information
   ```
   $ docker inspect kubia-container
   ```
+- **Exploring the inside of a running container** 
+
+  Execute bash inside the running container 'kubia-container'. Below options need to make it run in general use.
+  ```
+  $ docker exec -it kubia-container bash
+  ```
+  - option '-i': makes sure STDIN is kept open. You need this for entering commands into the shell.
+  - option '-t': allocates a pseudo terminal (TTY).
+ 
+  Then, list processes from inside a container. You can only see the processes inside this container in the host OS.
+  ```
+  root@44d76963e8e1:/# ps aux
+  USER  PID %CPU %MEM    VSZ   RSS TTY STAT START TIME COMMAND
+  root    1  0.0  0.1 676380 16504 ?   Sl   12:31 0:00 node app.js
+  root   10  0.0  0.0  20216  1924 ?   Ss   12:31 0:00 bash
+  root   19  0.0  0.0  17492  1136 ?   R+   12:38 0:00 ps aux
+  ```
+
+  - If you’re using a Mac or Windows, you’ll need to log into the VM where the Docker daemon is running to see these processes.
+
+  List all the processes containing 'app.js' using the command below in different terminal.
+
+  ```
+  $ ps aux | grep app.js
+  USER  PID %CPU %MEM    VSZ   RSS TTY STAT START TIME COMMAND
+  root  382  0.0  0.1 676380 16504 ?   Sl   12:31 0:00 node app.js
+  ```
+  PIDs in the 2 results above are different. The reason is the container is using its own PID Linux namespace and has a completely isloated process tree, with its own sequence of numbers.
+
+  Likewise, each container has its own isolated filesystem.
+  ```
+  root@44d76963e8e1:/# ls /
+  app.js  boot  etc   lib    media  opt   root  sbin  sys  usr
+  bin     dev   home  lib64  mnt    proc  run   srv   tmp  var
+  ```
+
+- **Image Registry**
+
+  To share the docker image to other computer, you need to push the image to an external image registry.
+  - e.g. [Docker Hub](http://hub.docker.com) , Amazon ECR, Google Container Registry
+  - To upload the image to Docker Hub, image should be re-tagged to start with your Docker Hub ID.
+  - Container image tags are accummulated and each container image can have multiple tags.
+
+## 🖥 Examples
+
+```bash
+# Stop processes inside the docker container and the container
+$ docker stop kubia-container
+
+# Check the running and paused containers -> kubia-container still exist since it's paused
+$ docker ps -a
+
+# Remove Docker container and all the contents inside
+$ docker rm kubia-container
+```
+  
+```bash
+# Create an additional tag for the image to follow the Docker Hub's rules
+$ docker tag kubia your_dockerhub_id/kubia
+
+# List docker images
+$ docker images | head
+REPOSITORY        TAG      IMAGE ID        CREATED             VIRTUAL SIZE
+luksa/kubia       latest   d30ecc7419e7    About an hour ago   654.5 MB
+kubia             latest   d30ecc7419e7    About an hour ago   654.5 MB
+docker.io/node    7.0      04c0ca2a8dad    2 days ago          654.5 MB
+...
+
+# Push the image to Docker Hub after login using docker login command
+$ docker push your_dockerhub_id/kubia
+```
+
+```bash
+# In any other machine, download the uploaded docker image
+$ docker run -p 8080:8080 -d your_dockerhub_id/kubia
+```
