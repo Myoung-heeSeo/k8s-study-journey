@@ -10,7 +10,9 @@ By the end of the chapter, we gain practical knowledge on deploying applications
 ## 📌 Key Points
 ### Creating, running and sharing a container image with Docker
 - **Install Docker on Linux environment**
- http://docs.docker.com/engine/installation/
+
+  - http://docs.docker.com/engine/installation/
+
 - **Download and run image with docker**
   
   Download busybox image with docker. Busybox is a single executable that combines many of the standard UNIX command-line tools, such as `echo`, `ls`, `gzip`.
@@ -119,6 +121,50 @@ By the end of the chapter, we gain practical knowledge on deploying applications
   - To upload the image to Docker Hub, image should be re-tagged to start with your Docker Hub ID.
   - Container image tags are accummulated and each container image can have multiple tags.
 
+### Setting up a Kubernetes cluster
+
+- **There's several ways to set up a Kubernetes cluster:**
+  - Set up by yourself
+    - on your local development machine
+    - on your own organization's cluster of machines
+    - on cloud providers providing virtual machines
+      e.g. Google Compute Engine, Amazon EC2, Microsoft Azure
+  - Set up by using a managed Kubernetes cluster
+    e.g. GKE(Google Kubernetes Engine), AWS EKS(Elastic Kubernetes Service)
+
+- **Tools**
+  - **Minikube**: a tool to sets up a single-node cluster to test Kubernetes and developing apps locally.
+  - **kubectl**: CLI client to work with Kubernetes. kubectl get command can list all kinds of Kubernetes objects.
+
+- **Interaction with three-node K8s cluster**
+
+  <img width="544" alt="스크린샷 2023-11-03 오전 12 14 57" src="https://github.com/Myoung-heeSeo/k8s-study-journey/assets/43746377/eb7d58c2-a2f3-47fa-aad5-2dd73ea4a3eb">
+
+  - Each node runs Docker, Kubelet and the kube-proxy
+  - Engineer interact with the cluster through the kubectl CLI
+  - kubectl issues REST requests to the Kubernetes API server running on the master node
+
+### Running simple app on Kubernetes
+
+The simpletes way to deploy your app without JSON or YAML file is to use the `kubectl run` command.
+```bash
+$ kubectl run kubia --image=luksa/kubia --port=8080 --generator=run/v1
+replicationcontroller "kubia" created
+```
+
+### Pod
+
+- A group of one or more related containers that run together on the same worker node and in the same Linux namespace(s).
+- Each pod is like a separate logical machine with its own IP, hostname, processes, and so on.
+
+  <center><img width="535" alt="스크린샷 2023-11-03 오전 12 36 36" src="https://github.com/Myoung-heeSeo/k8s-study-journey/assets/43746377/7eae337b-ca23-4826-a25a-c480348a1e17"></center>
+
+
+  <img width="546" alt="스크린샷 2023-11-03 오전 12 41 00" src="https://github.com/Myoung-heeSeo/k8s-study-journey/assets/43746377/e4984552-02cf-4a6e-bcb7-a0071493695c">
+
+- **Scheduling: In Kubernetes, it means assigning the pod to a node. Pod is run immediately once it's assigned.**
+
+
 ## 🖥 Examples
 
 ```bash
@@ -151,4 +197,61 @@ $ docker push your_dockerhub_id/kubia
 ```bash
 # In any other machine, download the uploaded docker image
 $ docker run -p 8080:8080 -d your_dockerhub_id/kubia
+```
+
+```bash
+# Install Minikube
+$ curl -Lo minikube https://storage.googleapis.com/minikube/releases/
+➥  v0.23.0/minikube-darwin-amd64 && chmod +x minikube && sudo mv minikube
+➥  /usr/local/bin/
+
+# Start minikube virtual machine
+$ minikube start
+Starting local Kubernetes cluster...
+Starting VM...
+SSH-ing files into VM...
+...
+Kubectl is now configured to use the cluster.
+
+# Log into the minikube VM  to explore
+$ minikube ssh
+
+# Install kubectl for OSX
+$ curl -LO https://storage.googleapis.com/kubernetes-release/release
+➥  /$(curl -s https://storage.googleapis.com/kubernetes-release/release
+➥  /stable.txt)/bin/darwin/amd64/kubectl
+➥  && chmod +x kubectl
+➥  && sudo mv kubectl /usr/local/bin/
+
+# Display cluster information when the cluster is up
+$ kubectl cluster-info
+Kubernetes master is running at https://192.168.99.100:8443
+KubeDNS is running at https://192.168.99.100:8443/api/v1/proxy/...
+kubernetes-dashboard is running at https://192.168.99.100:8443/api/v1/...
+```
+
+```bash
+# List cluster nodes to check if the clusster is up
+$ kubectl get nodes
+NAME                      STATUS  AGE  VERSION
+gke-kubia-85f6-node-0rrx  Ready   1m    v1.5.3
+gke-kubia-85f6-node-heo1  Ready   1m    v1.5.3
+gke-kubia-85f6-node-vs9f  Ready   1m    v1.5.3
+
+# List additional details of node
+$ kubectl describe node {node name}
+
+# Don't need to specify the object's name if there's only one existing object
+$ kubectl get node
+$ kubectl describe node
+
+# To set up alias, add below line to ~/.bashrc file
+$ alias kc=kubectl
+```
+
+```bash
+# List pods (worker node download the container image before run the container)
+$ kubectl get pods
+NAME          READY     STATUS    RESTARTS   AGE
+kubia-4jfyf   1/1       Pending   0          5m
 ```
