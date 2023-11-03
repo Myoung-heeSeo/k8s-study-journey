@@ -177,6 +177,7 @@ Pods are ephemeral which means it may disappear at any time if someone deleted t
 ### Principle in Kubernetes
 You're only declaratively changing the desired state of the system and letting Kubernetes examine the current actual state and reconcile it with the desired state.
 
+
 ## 🖥 Examples
 
 ```bash
@@ -339,5 +340,4 @@ kubia-hczji   1/1     Running   0          7s    10.1.0.2   gke-kubia-85...
 
 # Open dashboard when running Kubernetes using minikube
 $ minikube dashboard
-```
 ```
