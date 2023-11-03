@@ -162,8 +162,20 @@ replicationcontroller "kubia" created
 
   <img width="546" alt="스크린샷 2023-11-03 오전 12 41 00" src="https://github.com/Myoung-heeSeo/k8s-study-journey/assets/43746377/e4984552-02cf-4a6e-bcb7-a0071493695c">
 
-- **Scheduling: In Kubernetes, it means assigning the pod to a node. Pod is run immediately once it's assigned.**
+#### Scheduling
+In Kubernetes, it means assigning the pod to a node. Pod is run immediately once it's assigned.
 
+#### Service
+- Each pod has it's own internal IP address, so to make the pod accessible from the outside, create a LoadBalancer type service and the external LoadBalancer will be created and you can connect to the pod through the load balancer's public IP.
+- LoadBalancer type service not supported in Minikube. You can get accessible IP and port using kubia-http service.
+
+  <img width="524" alt="스크린샷 2023-11-04 오전 12 48 24" src="https://github.com/Myoung-heeSeo/k8s-study-journey/assets/43746377/77b6e775-c38a-4b99-9d69-fa55fd787fa2">
+
+#### Why you need a service
+Pods are ephemeral which means it may disappear at any time if someone deleted the pod, or if the pod was evicted from an otherwise healthy node. If any of those occurs, a missing pod is replaced with a new one by the Replication-Controller with a new IP address. By using services, new pods will have a same static IP addresses as before. 
+
+### Principle in Kubernetes
+You're only declaratively changing the desired state of the system and letting Kubernetes examine the current actual state and reconcile it with the desired state.
 
 ## 🖥 Examples
 
@@ -254,4 +266,78 @@ $ alias kc=kubectl
 $ kubectl get pods
 NAME          READY     STATUS    RESTARTS   AGE
 kubia-4jfyf   1/1       Pending   0          5m
+```
+
+```bash
+# Create the Loadbalancer type service (rc = replicationcontroller)
+$ kubectl expose rc kubia --type=LoadBalancer --name kubia-http
+service "kubia-http" exposed
+
+# List services. Since it takes time for the load balancer to be created, it doesn't have an external IP address yet.
+$ kubectl get services
+NAME         CLUSTER-IP     EXTERNAL-IP   PORT(S)         AGE
+kubernetes   10.3.240.1     <none>        443/TCP         34m
+kubia-http   10.3.246.185   <pending>     8080:31348/TCP  4s
+
+# List services again
+$ kubectl get svc
+NAME         CLUSTER-IP     EXTERNAL-IP   PORT(S)         AGE
+kubernetes   10.3.240.1     <none>        443/TCP         35m
+kubia-http   10.3.246.185   104.155.74.57 8080:31348/TCP  1m
+
+# Send requests to the pod through external IP and port
+$ curl 104.155.74.57:8080
+You've hit kubia-4jfyf
+
+# Get accessible IP and port in minikube
+$ minikube service kubia-http
+```
+
+```bash
+# List replicationcontroller
+# DESIRED: number of pod replicas you want t he RC to keep
+# CURRENT: actual number of pods currently running
+$ kubectl get replicationcontrollers
+NAME        DESIRED    CURRENT   AGE
+kubia       1          1         17m
+
+# List all the resources types
+$ kubectl get
+
+# Increasing the desired replica count
+$ kubectl scale rc kubia --replicas=3
+replicationcontroller "kubia" scaled
+
+# Get rc result
+$ kubectl get rc
+NAME        DESIRED    CURRENT   READY   AGE
+kubia       3          3         2       17m
+```
+
+```
+# List pod with node info
+$ kubectl get pods -o wide
+NAME          READY   STATUS    RESTARTS   AGE   IP         NODE
+
+# Show details of a pod
+$ kubectl describe pod kubia-hczji
+Name:        kubia-hczji
+Namespace:   default
+Node:        gke-kubia-85f6-node-vs9f/10.132.0.3        ❶
+Start Time:  Fri, 29 Apr 2016 14:12:33 +0200
+Labels:      run=kubia
+Status:      Running
+IP:          10.1.0.2
+Controllers: ReplicationController/kubia
+Containers:  ...
+Conditions:
+  Type       Status
+  Ready      True
+Volumes: ...
+Events: ...
+kubia-hczji   1/1     Running   0          7s    10.1.0.2   gke-kubia-85...
+
+# Open dashboard when running Kubernetes using minikube
+$ minikube dashboard
+```
 ```
